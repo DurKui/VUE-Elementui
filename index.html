@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+<div id="app">
+<!--    头部导航栏-->
+    <el-container>
+        <el-header>
+            <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+                <el-menu-item index="1">处理中心</el-menu-item>
+                <el-submenu index="2">
+                    <template slot="title">我的工作台</template>
+                    <el-menu-item index="2-1">选项1</el-menu-item>
+                    <el-menu-item index="2-2">选项2</el-menu-item>
+                    <el-menu-item index="2-3">选项3</el-menu-item>
+                    <el-submenu index="2-4">
+                        <template slot="title">选项4</template>
+                        <el-menu-item index="2-4-1">选项1</el-menu-item>
+                        <el-menu-item index="2-4-2">选项2</el-menu-item>
+                        <el-menu-item index="2-4-3">选项3</el-menu-item>
+                    </el-submenu>
+                </el-submenu>
+                <el-menu-item index="3" disabled>消息中心</el-menu-item>
+                <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">其它选项</a></el-menu-item>
+            </el-menu>
+        </el-header>
+        <el-container>
+<!--            侧边导航栏-->
+            <el-aside width="200px">
+                <el-menu
+                        default-active="2"
+                        class="el-menu-vertical-demo"
+                        @open="handleOpen"
+                        @close="handleClose" style="height: 100%">
+                    <el-submenu index="1">
+                        <template slot="title">
+                            <i class="el-icon-location"></i>
+                            <span>导航一</span>
+                        </template>
+                        <el-menu-item-group>
+                            <template slot="title">分组一</template>
+                            <el-menu-item index="1-1">选项1</el-menu-item>
+                            <el-menu-item index="1-2">选项2</el-menu-item>
+                        </el-menu-item-group>
+                        <el-menu-item-group title="分组2">
+                            <el-menu-item index="1-3">选项3</el-menu-item>
+                        </el-menu-item-group>
+                        <el-submenu index="1-4">
+                            <template slot="title">选项4</template>
+                            <el-menu-item index="1-4-1">选项1</el-menu-item>
+                        </el-submenu>
+                    </el-submenu>
+                    <el-menu-item index="2">
+                        <i class="el-icon-menu"></i>
+                        <span slot="title">导航二</span>
+                    </el-menu-item>
+                    <el-menu-item index="3" disabled>
+                        <i class="el-icon-document"></i>
+                        <span slot="title">导航三</span>
+                    </el-menu-item>
+                    <el-menu-item index="4">
+                        <i class="el-icon-setting"></i>
+                        <span slot="title">导航四</span>
+                    </el-menu-item>
+                </el-menu>
+            </el-aside>
+<!--            主体部分-->
+            <el-main>
+                <h1>同学录</h1>
+                <div class="head">
+                    <el-row :gutter="20">
+                        <el-col :span="6"><el-input v-model="userInfo.username" placeholder="请输入姓名"></el-input></el-col>
+                        <el-col :span="6"><el-input v-model="userInfo.gender" placeholder="请输入性别"></el-input></el-col>
+                        <el-col :span="6"><el-input v-model="userInfo.phonenumber" placeholder="请输入电话"></el-input></el-col>
+                        <el-col :span="6"><el-date-picker v-model="userInfo.birth"  format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker></el-col>
+                    </el-row>
+                    <el-button type="primary"  class="add-btn" @click="addinfo()">添加信息</el-button>
+                </div>
+                <div class="body">
+                    <template>
+                        <el-table
+                                :data="tableData"
+                                stripe
+                                style="width: 100%">
+                            <el-table-column
+                                    prop="username"
+                                    label="姓名"
+                                    width="180">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="gender"
+                                    label="性别"
+                                    width="180">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="phonenumber"
+                                    label="电话">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="birth"
+                                    label="出生日期">
+
+                            </el-table-column>
+                            <el-table-column label="操作">
+                                <template slot-scope="scope">
+                                    <el-button type="primary" icon="el-icon-edit" @click="editinfo(scope.row,scope.$index)" circle></el-button>
+                                    <el-button type="danger" icon="el-icon-delete" @click="deleteinfo(scope.$index)" circle></el-button>
+                                </template>
+                            </el-table-column>
+
+                        </el-table>
+                    </template>
+                </div>
+            </el-main>
+        </el-container>
+        <el-footer>Footer</el-footer>
+    </el-container>
+<!-- 对话框-->
+    <el-dialog
+            title="编辑用户信息"
+            :visible.sync="centerDialogVisible"
+            width="30%"
+            center>
+        <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="姓名">
+                <el-input v-model="form.username"></el-input>
+            </el-form-item>
+            <el-form-item label="性别">
+                <el-input v-model="form.gender"></el-input>
+            </el-form-item>
+            <el-form-item label="电话号码">
+                <el-input v-model="form.phonenumber"></el-input>
+            </el-form-item>
+            <el-form-item label="出生日期">
+                <el-date-picker v-model="form.birth"  format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
+            </el-form-item>
+        </el-form>
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="changeinfo()">确 定</el-button>
+        </span>
+    </el-dialog>
+</div>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
